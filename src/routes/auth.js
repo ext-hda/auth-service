@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const { signToken, verifyToken } = require('../middleware/jwt');
+const { rateLimitLogin } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.post('/register', async (req, res) => {
   return res.status(201).json({ email });
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', rateLimitLogin, async (req, res) => {
   const { email, password } = req.body;
   const user = users.get(email);
   if (!user) {
